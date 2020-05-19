@@ -1,0 +1,22 @@
+#파이썬_입문_200519
+
+import requests
+from bs4 import BeautifulSoup
+
+indeed_result = requests.get(
+    "https://kr.indeed.com/%EC%B7%A8%EC%97%85?as_and=%EB%A7%88%EC%BC%80%ED%8C%85&as_phr=&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&as_src=&radius=25&l=&fromage=last&limit=50&sort=&psf=advsrch&from=advancedsearch"
+)
+
+indeed_soup = BeautifulSoup(indeed_result.text, "html.parser")
+
+pagination = indeed_soup.find("div", {"class": "pagination"})
+
+links = pagination.find_all('a')
+pages = []
+for link in links[:-1]:
+    pages.append(int(link.find("span").string))
+
+max_page = (pages[-1])
+
+for n in range(max_page):
+  print(f"start={n*50}")
