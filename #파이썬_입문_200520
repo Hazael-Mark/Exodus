@@ -1,0 +1,45 @@
+#main.py
+
+#파이썬_공부_200520
+from indeed import extract_indeed_pages, extract_indeed_jobs
+
+
+last_indeed_page = extract_indeed_pages()
+
+indeed_jobs = extract_indeed_jobs(last_indeed_page)
+
+
+
+#indeed.py
+
+import requests
+from bs4 import BeautifulSoup
+
+LIMIT = 50
+URL = f"https://kr.indeed.com/%EC%B7%A8%EC%97%85?as_and=%EB%A7%88%EC%BC%80%ED%8C%85&as_phr=&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&as_src=&radius=25&fromage=last&limit={LIMIT}&sort=&psf=advsrch&from=advancedsearch"
+
+def extract_indeed_pages():
+  result = requests.get(URL)
+  soup = BeautifulSoup(result.text, "html.parser")
+  pagination = soup.find("div", {"class":"pagination"})
+  links = pagination.find_all('a')
+  pages = []
+  for link in links[:-1]: #avoiding the 'next'
+    pages.append(int(link.string))
+  max_page = pages[-1]
+  return max_page
+
+def extract_indeed_jobs(last_page):
+  jobs = []
+  for page in range(last_page):
+    result = requests.get(f"{URL}&start={page*LIMIT}")
+    print(result.status_code)
+  return jobs
+  
+  
+  
+  #requirements
+  
+  beautifulsoup4
+  requirements-parser
+  requests
